@@ -76,6 +76,7 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
+    
 
     namespace "com.brand"
     defaultConfig {
@@ -111,6 +112,8 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    implementation 'com.google.android.gms:play-services-location:21.0.1' //ye koi emergency number se agar koi messaage bhejo to location bhejne ke liye 
+     implementation("androidx.work:work-runtime-ktx:2.8.1") //update for 13 and 14
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

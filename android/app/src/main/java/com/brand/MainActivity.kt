@@ -1,22 +1,101 @@
 package com.brand
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 
 class MainActivity : ReactActivity() {
 
-  /**
-   * Returns the name of the main component registered from JavaScript. This is used to schedule
-   * rendering of the component.
-   */
-  override fun getMainComponentName(): String = "Brand"
+    companion object {
+        private const val SMS_PERMISSION_REQUEST_CODE = 123
+        private const val CALL_PERMISSION_REQUEST_CODE = 124
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 125
+        private const val BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 126
+    }
 
-  /**
-   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
-   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
-   */
-  override fun createReactActivityDelegate(): ReactActivityDelegate =
-      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+    override fun getMainComponentName(): String = "Project01"
+
+    override fun createReactActivityDelegate(): ReactActivityDelegate =
+        DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Request necessary permissions
+        requestPermissionsIfNeeded()
+    }
+
+    private fun requestPermissionsIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val smsPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS)
+            val callPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+            val locationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            val backgroundLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+
+            // Request SMS permission if not granted
+            if (smsPermission != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECEIVE_SMS)) {
+                    Toast.makeText(this, "SMS permission is required to receive messages.", Toast.LENGTH_LONG).show()
+                }
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECEIVE_SMS), SMS_PERMISSION_REQUEST_CODE)
+            }
+
+            // Request CALL permission if not granted
+            if (callPermission != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
+                    Toast.makeText(this, "Call permission is required to make phone calls.", Toast.LENGTH_LONG).show()
+                }
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), CALL_PERMISSION_REQUEST_CODE)
+            }
+
+            // Request Location permission if not granted
+            if (locationPermission != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    Toast.makeText(this, "Location permission is required to access your location.", Toast.LENGTH_LONG).show()
+                }
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            }
+
+            // Request Background Location permission if not granted (Android 10 & above)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && backgroundLocationPermission != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                    Toast.makeText(this, "Background location permission is required for continuous location tracking.", Toast.LENGTH_LONG).show()
+                }
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            val message = when (requestCode) {
+                SMS_PERMISSION_REQUEST_CODE -> "SMS permission granted"
+                CALL_PERMISSION_REQUEST_CODE -> "Call permission granted"
+                LOCATION_PERMISSION_REQUEST_CODE -> "Location permission granted"
+                BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE -> "Background location permission granted"
+                else -> ""
+            }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        } else {
+            val message = when (requestCode) {
+                SMS_PERMISSION_REQUEST_CODE -> "SMS permission denied"
+                CALL_PERMISSION_REQUEST_CODE -> "Call permission denied"
+                LOCATION_PERMISSION_REQUEST_CODE -> "Location permission denied"
+                BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE -> "Background location permission denied"
+                else -> ""
+            }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
