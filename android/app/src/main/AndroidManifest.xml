@@ -3,35 +3,34 @@
 
   <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
+    <!-- <uses-permission android:name="android.permission.SEND_SMS" /> -->
+    <!-- <uses-permission android:name="android.permission.RECEIVE_SMS" /> -->
+    <!-- <uses-permission android:name="android.permission.READ_SMS" /> -->
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 <uses-permission android:name="android.permission.CALL_PHONE" />
-
-
 <!-- location  -->
-
-
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 <uses-permission android:name="android.permission.SEND_SMS"/>
 <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-<uses-permission android:name="android.permission.READ_SMS"/>
-<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+<!-- <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/> -->
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
-<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<!-- <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> -->
 <uses-permission android:name="android.permission.CALL_PHONE" />
 <!-- <uses-permission android:name="android.permission.CALL_PHONE" /> -->
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-<uses-permission android:name="android.permission.CALL_PHONE"/>
+<!-- <uses-permission android:name="android.permission.CALL_PHONE"/> -->
 <uses-permission android:name="android.permission.READ_SMS"/>
-<uses-permission android:name="android.permission.SEND_SMS"/>
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+<!-- <uses-permission android:name="android.permission.SEND_SMS"/> -->
+<!-- <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/> -->
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
 
 
 
@@ -61,7 +60,7 @@
         <!-- SMS Receiver this for siren-->
 
 
- <receiver
+        <receiver
             android:name=".SMSSirenReceiver"
             android:enabled="true"
             android:exported="true">
@@ -87,19 +86,33 @@
 <service
     android:name=".LocationService"
     android:foregroundServiceType="location"
-    android:exported="false" 
+    android:permission="android.permission.FOREGROUND_SERVICE"
+    android:exported="false"
     />
 
-<activity
-    android:name=".CallActivity"
-    android:showWhenLocked="true"
-    android:turnScreenOn="true"
-    android:exported="true">
-</activity>
+
+    <!-- call reciever  -->
+
+   <receiver android:name=".CallReceiver"
+        android:exported="true"> <!-- Set this to true or false depending on whether the receiver should be available to other apps -->
+        <intent-filter>
+            <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+        </intent-filter>
+    </receiver>
+
+
+
 
 <service android:name=".CallService"
     android:permission="android.permission.BIND_JOB_SERVICE"
     android:exported="false"/>
+
+<service
+    android:name=".MyForegroundService"
+    android:foregroundServiceType="phoneCall"
+    android:exported="false"/>
+ 
+
 
 
 
